@@ -6,12 +6,14 @@ import random
 from states import STATES
 
 app = Flask(__name__)
+app.jinja_env.cache = {}
+
 
 states = dict.fromkeys(STATES[0], STATES[0][0])
 for i in range(49):
 	states.update(dict.fromkeys(STATES[i+1], STATES[i+1][0]))
 
-guessed = ['ab']
+guessed = ['']
 now = datetime.now()
 str = now.strftime("%Y%m%d%H%M%s")
 

@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
-	<title>FlaskBlog></title>
+	<title>Map Game!</title>
 </head>
-<body>
-	<h1>Welcome to Map Game!</h1>
+<body onload="document.myform.text.focus();">
+	<h1>Welcome to our Map Game!</h1>
 	<img src="{{ map_image }}" alt="Map Image">
-	<form method="POST">
-		<input name="text">
-		<input type="submit">
+	<form method="POST" name="myform">
+		<input name="text" placeholder='Type state here'>
+		<input type="submit" value='Guess!' onclick="document.myform.text.focus();">
 	</form>
 	<p>{{error_message}}</p>
 </body>
