@@ -6,5 +6,9 @@ source map-game-full/bin/activate
 
 cd map-game-full/
 
+export FLASK_APP=app
+
+export FLASK_ENV=development
+
 python -m flask run
 
