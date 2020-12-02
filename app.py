@@ -3,18 +3,13 @@ import plotly.express as px
 import os
 from datetime import datetime
 import random
+from states import STATES
 
 app = Flask(__name__)
 
-states = ["AL", "AK", "AZ", "AR", "CA", "CO",
-		  "CT", "DE", "FL", "GA", "HI", "ID",
-		  "IL", "IN", "IA", "KS", "KY", "LA",
-		  "ME", "MD", "MA", "MI", "MN", "MS",
-		  "MO", "MT", "NE", "NV", "NH", "NJ",
-		  "NM", "NY", "NC", "ND", "OH", "OK",
-		  "OR", "PA", "RI", "SC", "SD", "TN",
-		  "TX", "UT", "VT", "VA", "WA", "WV",
-		  "WI", "WY"]
+states = dict.fromkeys(STATES[0], STATES[0][0])
+for i in range(49):
+	states.update(dict.fromkeys(STATES[i+1], STATES[i+1][0]))
 
 guessed = ['ab']
 now = datetime.now()
@@ -35,6 +30,7 @@ def index_post():
 	processed_text = text.upper()
 	if processed_text not in states:
 		return render_template('index.html', map_image = '../static/images/map' + str + '.png', error_message = 'Not a valid state')
+	processed_text = states[processed_text]
 	new_guessed = guessed + [processed_text]
 	update_guessed(new_guessed)
 	fig = px.choropleth(locations=guessed, locationmode="USA-states", color=[0]*len(guessed), scope="usa")
