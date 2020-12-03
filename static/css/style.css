@@ -1,13 +1,12 @@
-h1 {
-	/* border: 2px #eee solid; */
-	color: brown;
-	/* text-align: center; */
-	/* padding: 10px; */
+#header{
+	background-color: #eee;
+	color: #000C66;
+	padding-top: 10px;
 }
 #trivia.col{
 	margin-top: 80px;
 }
-/* image{
+img{
 	width: 800px;
 }
- */
+

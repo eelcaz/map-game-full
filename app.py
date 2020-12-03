@@ -45,7 +45,7 @@ def index_post():
 	text = request.form['text']
 	processed_text = text.upper()
 	if processed_text not in states:
-		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'Not a valid state')
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!')
 	if processed_text not in left_to_guess:
 		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'State already used!')
 	
@@ -54,7 +54,7 @@ def index_post():
 	if processed_text == current_state:
 		result = 'Correct! This state will now be highlighted'
 	else:
-		result = 'Incorrect :(, the correct state is ' + current_state + '. This state will now be highlighted.'
+		result = 'Incorrect :( The correct state is ' + current_state + '. This state will now be highlighted.'
 
 	update_trivia_parameters()
 	
