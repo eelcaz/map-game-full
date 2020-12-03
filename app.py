@@ -4,55 +4,107 @@ import os
 from datetime import datetime
 import random
 from states import STATES
+import pandas as pd
+from copy import deepcopy
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
 
+trivia = pd.read_csv(r'data/statescsv.csv')
 
 states = dict.fromkeys(STATES[0], STATES[0][0])
 for i in range(49):
 	states.update(dict.fromkeys(STATES[i+1], STATES[i+1][0]))
 
-guessed = ['']
+states_used = ['']
+left_to_guess = deepcopy(states)
+
+current_state = states[random.choice(list(left_to_guess.keys()))]
+is_current_state = trivia['State']==current_state
+trivia_current_state = trivia[is_current_state].index[0]
+question_choices = trivia.iloc[trivia_current_state]
+
+cols = ['Flower-Bird','Funfact1','Funfact2']
+question_type = random.choice(cols)
+
+current_question = question_choices['Flower'] + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+
 now = datetime.now()
 str = now.strftime("%Y%m%d%H%M%s")
 
 @app.route('/')
 def index():
-	fig = px.choropleth(locations=guessed, locationmode="USA-states", color=[0], scope="usa")
+	fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0], scope="usa")
 	fig.update_layout(coloraxis_showscale=False)
-	update_now(datetime.now())
-	update_str(now.strftime("%Y%m%d%H%M%s"))
+	update_map_path()
 	fig.write_image('static/images/map' + str + '.png')
-	return render_template('index.html', map_image = '../static/images/map' + str + '.png')
+	return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question)
 
 @app.route('/', methods=['POST'])
 def index_post():
 	text = request.form['text']
 	processed_text = text.upper()
 	if processed_text not in states:
-		return render_template('index.html', map_image = '../static/images/map' + str + '.png', error_message = 'Not a valid state')
-	processed_text = states[processed_text]
-	new_guessed = guessed + [processed_text]
-	update_guessed(new_guessed)
-	fig = px.choropleth(locations=guessed, locationmode="USA-states", color=[0]*len(guessed), scope="usa")
-	fig.update_layout(coloraxis_showscale=False)
-	update_now(datetime.now())
-	update_str(now.strftime("%Y%m%d%H%M%s"))
-	fig.write_image('static/images/map' + str + '.png')
-	return render_template('index.html', map_image = '../static/images/map' + str + '.png')
-
-def update_guessed(new_guessed):
-	global guessed
-	guessed = new_guessed
-	return guessed
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'Not a valid state')
+	if processed_text not in left_to_guess:
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'State already used!')
 	
-def update_now(new_now):
-	global now
-	now = new_now
-	return now
+	processed_text = states[processed_text]
+	result = ''
+	if processed_text == current_state:
+		result = 'Correct! This state will now be highlighted'
+	else:
+		result = 'Incorrect :(, the correct state is ' + current_state + '. This state will now be highlighted.'
 
-def update_str(new_str):
+	update_trivia_parameters()
+	
+	fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
+	fig.update_layout(coloraxis_showscale=False)
+
+	update_map_path()
+
+	fig.write_image('static/images/map' + str + '.png')
+	return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
+
+def update_map_path():
+	global now
+	now = datetime.now()
 	global str
-	str = new_str
-	return now
+	str = now.strftime("%Y%m%d%H%M%s")
+
+def update_states_used(new_used):
+	global states_used
+	states_used = new_used
+	return states_used
+
+def update_current_state(new_state):
+	global current_state
+	current_state = new_state
+	return current_state
+
+def generateNewQuestion():
+	is_current_state = trivia['State']==current_state
+	trivia_current_state = trivia[is_current_state].index[0]
+	question_choices = trivia.iloc[trivia_current_state]
+
+	cols = ['Flower-Bird','Funfact1','Funfact2']
+	question_type = random.choice(cols)
+
+	return question_choices['Flower'] + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+
+def update_current_question(new_question):
+	global current_question
+	current_question = new_question
+	return current_question
+
+def update_trivia_parameters():
+	update_states_used(states_used + [current_state])
+	keys_to_remove = []
+	if current_state in left_to_guess :
+		for q,v in left_to_guess.items():
+			if v==current_state:
+				keys_to_remove += [q]
+	for k in keys_to_remove:
+		left_to_guess.pop(k)
+	update_current_state(states[random.choice(list(left_to_guess.keys()))])
+	update_current_question(generateNewQuestion())
