@@ -27,7 +27,7 @@ question_choices = trivia.iloc[trivia_current_state]
 cols = ['Flower-Bird','Funfact1','Funfact2']
 question_type = random.choice(cols)
 
-current_question = question_choices['Flower'] + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+current_question = 'State Flower: ' + question_choices['Flower'] +', State Bird: ' + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
 
 now = datetime.now()
 str = now.strftime("%Y%m%d%H%M%s")
@@ -42,29 +42,41 @@ def index():
 
 @app.route('/', methods=['POST'])
 def index_post():
-	text = request.form['text']
-	processed_text = text.upper()
-	if processed_text not in states:
-		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!')
-	if processed_text not in left_to_guess:
-		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'State already used!')
-	
-	processed_text = states[processed_text]
-	result = ''
-	if processed_text == current_state:
-		result = 'Correct! This state will now be highlighted'
+	if 'request1' in request.form:
+		text = request.form['text']
+		processed_text = text.upper()
+		if processed_text not in states:
+			return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!')
+		if processed_text not in left_to_guess:
+			return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = 'State already used!')
+		
+		processed_text = states[processed_text]
+		result = ''
+		if processed_text == current_state:
+			result = 'Correct! This state will now be highlighted'
+		else:
+			result = 'Incorrect :( The correct state is ' + current_state + '. This state will now be highlighted.'
+
+		update_trivia_parameters()
+		
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
+		fig.update_layout(coloraxis_showscale=False)
+
+		update_map_path()
+
+		fig.write_image('static/images/map' + str + '.png')
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
 	else:
-		result = 'Incorrect :( The correct state is ' + current_state + '. This state will now be highlighted.'
+		result = 'You skipped :( The correct state was ' + current_state + '. This state will now be highlighted.'
+		update_trivia_parameters()
+		
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
+		fig.update_layout(coloraxis_showscale=False)
 
-	update_trivia_parameters()
-	
-	fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
-	fig.update_layout(coloraxis_showscale=False)
+		update_map_path()
 
-	update_map_path()
-
-	fig.write_image('static/images/map' + str + '.png')
-	return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
+		fig.write_image('static/images/map' + str + '.png')
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
 
 def update_map_path():
 	global now
