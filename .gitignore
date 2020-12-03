@@ -2,4 +2,5 @@ __pycache__/
 lib/
 lib64
 share
-static/images
+static/images/*
+!static/images/favicon.ico

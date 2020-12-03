@@ -90,7 +90,7 @@ def generateNewQuestion():
 	cols = ['Flower-Bird','Funfact1','Funfact2']
 	question_type = random.choice(cols)
 
-	return question_choices['Flower'] + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+	return 'State Flower: ' + question_choices['Flower'] +', State Bird: ' + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
 
 def update_current_question(new_question):
 	global current_question
