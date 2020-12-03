@@ -1,7 +1,7 @@
 #header{
-	background-color: #eee;
-	color: #000C66;
-	padding-top: 10px;
+	border-bottom: rgb(245, 245, 245);
+	color: navy;
+	padding: 20px;
 }
 #trivia.col{
 	margin-top: 80px;
