@@ -16,7 +16,9 @@ states = dict.fromkeys(STATES[0], STATES[0][0])
 for i in range(49):
 	states.update(dict.fromkeys(STATES[i+1], STATES[i+1][0]))
 
-states_used = ['']
+states_used = ['stateIncorrect', 'stateCorrect']
+colors = [0,1]
+color_scale = [(0,"red"), (1,"green")]
 left_to_guess = deepcopy(states)
 
 current_state = states[random.choice(list(left_to_guess.keys()))]
@@ -34,7 +36,7 @@ str = now.strftime("%Y%m%d%H%M%s")
 
 @app.route('/')
 def index():
-	fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0], scope="usa")
+	fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
 	fig.update_layout(coloraxis_showscale=False)
 	update_map_path()
 	fig.write_image('static/images/map' + str + '.png')
@@ -42,7 +44,7 @@ def index():
 
 @app.route('/', methods=['POST'])
 def index_post():
-	if 'request1' in request.form:
+	if 'AnswerRequest' in request.form:
 		text = request.form['text']
 		processed_text = text.upper()
 		if processed_text not in states:
@@ -53,24 +55,26 @@ def index_post():
 		processed_text = states[processed_text]
 		result = ''
 		if processed_text == current_state:
+			update_colors(colors+[1])
 			result = 'Correct! This state will now be highlighted'
 		else:
+			update_colors(colors+[0])
 			result = 'Incorrect :( The correct state is ' + current_state + '. This state will now be highlighted.'
 
 		update_trivia_parameters()
 		
-		fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
 		fig.update_layout(coloraxis_showscale=False)
 
 		update_map_path()
 
 		fig.write_image('static/images/map' + str + '.png')
 		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
-	else:
+	else: # else if 'SkipRequest' in request.form:
 		result = 'You skipped :( The correct state was ' + current_state + '. This state will now be highlighted.'
+		update_colors(colors+[0])
 		update_trivia_parameters()
-		
-		fig = px.choropleth(locations=states_used, locationmode="USA-states", color=[0]*len(states_used), scope="usa")
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
 		fig.update_layout(coloraxis_showscale=False)
 
 		update_map_path()
@@ -83,6 +87,11 @@ def update_map_path():
 	now = datetime.now()
 	global str
 	str = now.strftime("%Y%m%d%H%M%s")
+
+def update_colors(new_colors):
+	global colors
+	colors = new_colors
+	return colors
 
 def update_states_used(new_used):
 	global states_used
