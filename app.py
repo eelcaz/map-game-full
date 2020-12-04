@@ -6,6 +6,7 @@ import random
 from states import STATES
 import pandas as pd
 from copy import deepcopy
+import webbrowser
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
@@ -84,6 +85,9 @@ def index_post():
 	elif 'RestartGame' in request.form:
 		result = reset_game()
 		return result
+	elif 'TakeSurvey' in request.form:
+		webbrowser.open('https://www.surveymonkey.com/r/8GPRNPL')
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
 
 def reset_game():
 		global states_used
