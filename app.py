@@ -42,7 +42,7 @@ current_score = 0
 @app.route('/')
 def index():
 	update_map()
-	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, curr_score = current_score)
+	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, curr_score = get_score())
 
 @app.route('/', methods=['POST'])
 def index_post():
@@ -94,7 +94,7 @@ def handle_skip():
 
 def update_map():
 	fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
-	#fig.update_layout(coloraxis_showscale=False)
+	fig.update_layout(coloraxis_showscale=False)
 	update_map_path()
 	fig.write_image('static/images/map' + date_string + '.png')
 
@@ -112,7 +112,9 @@ def handle_reset():
 	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message='Restarted!', curr_score = get_score())
 
 def get_score():
-	return str(current_score) + '/ ' + str(len(states_used)-2) + ' = ' + str(0 if len(states_used) == 2 else round(current_score/(len(states_used)-2)*100, 2)) + '%'
+	if len(states_used) == 2:
+		return 'No score yet'
+	return str(current_score) + '/ ' + str(len(states_used)-2) + ' = ' + str(round(current_score/(len(states_used)-2)*100, 2)) + '%'
 
 def update_score(new_score):
 	global current_score
