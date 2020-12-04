@@ -86,27 +86,14 @@ def index_post():
 		return result
 
 def reset_game():
-		global states_used
-		states_used = ['stateIncorrect', 'stateCorrect']
-		global colors
-		colors = [0,1]
+		update_states_used(['stateIncorrect', 'stateCorrect'])
+		update_colors([0,1])
 		global left_to_guess
 		left_to_guess = deepcopy(states)
 
-		global current_state
-		current_state = states[random.choice(list(left_to_guess.keys()))]
-		global is_current_state
-		is_current_state = trivia['State']==current_state
-		global trivia_current_state
-		trivia_current_state = trivia[is_current_state].index[0]
-		global question_choices
-		question_choices = trivia.iloc[trivia_current_state]
-
-		cols = ['Flower-Bird','Funfact1','Funfact2']
-		question_type = random.choice(cols)
-        
-		global current_question
-		current_question = 'State Flower: ' + question_choices['Flower'] +', State Bird: ' + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+		update_current_state(states[random.choice(list(left_to_guess.keys()))])    
+		update_current_question(generateNewQuestion())
+		
 		fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
 
 		fig.update_layout(coloraxis_showscale=False)
