@@ -16,10 +16,13 @@ trivia = pd.read_csv(r'data/statescsv.csv')
 states = dict.fromkeys(STATES[0], STATES[0][0])
 for i in range(49):
 	states.update(dict.fromkeys(STATES[i+1], STATES[i+1][0]))
+state_names = dict.fromkeys(STATES[0], STATES[0][1])
+for i in range(49):
+	state_names.update(dict.fromkeys(STATES[i+1], STATES[i+1][1]))
 
 states_used = ['stateIncorrect', 'stateCorrect']
 colors = [0,1]
-color_scale = [(0,"red"), (1,"green")]
+color_scale = [(0,"red"), (0.75, 'green'), (1,"lightgreen")]
 left_to_guess = deepcopy(states)
 
 current_state = states[random.choice(list(left_to_guess.keys()))]
@@ -70,15 +73,18 @@ def handle_guess(request):
 	else:
 		update_colors(colors+[0])
 		update_score(current_score)
-		result = 'Incorrect :( The correct state is ' + current_state + '. This state will now be highlighted.'
+		result = 'Incorrect :( The correct state is ' + get_state_name() + '. This state will now be highlighted.'
 
 	update_trivia_parameters()
 	update_map()
 
 	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = result, curr_score = get_score())
 
+def get_state_name():
+	return state_names[current_state].capitalize()
+
 def handle_skip():
-	result = 'You skipped :( The correct state was ' + current_state + '. This state will now be highlighted.'
+	result = 'You skipped :( The correct state was ' + get_state_name() + '. This state will now be highlighted.'
 	update_colors(colors+[0])
 	update_trivia_parameters()
 	update_map()
@@ -88,7 +94,7 @@ def handle_skip():
 
 def update_map():
 	fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
-	fig.update_layout(coloraxis_showscale=False)
+	#fig.update_layout(coloraxis_showscale=False)
 	update_map_path()
 	fig.write_image('static/images/map' + date_string + '.png')
 
@@ -106,7 +112,7 @@ def handle_reset():
 	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message='Restarted!', curr_score = get_score())
 
 def get_score():
-	return str(current_score) + '/ ' + str(len(states_used)-2) + ' = ' + str(round(current_score/(len(states_used)-2)*100, 2)) + '%'
+	return str(current_score) + '/ ' + str(len(states_used)-2) + ' = ' + str(0 if len(states_used) == 2 else round(current_score/(len(states_used)-2)*100, 2)) + '%'
 
 def update_score(new_score):
 	global current_score
@@ -119,6 +125,12 @@ def update_map_path():
 	date_string = now.strftime("%Y%m%d%H%M%s")
 
 def update_colors(new_colors):
+	last_color = new_colors[-2]
+	if len(new_colors) >= 4:
+		if last_color == 0:
+			new_colors[-2]=0.25
+		elif last_color == 1:
+			new_colors[-2]=0.75
 	global colors
 	colors = new_colors
 	return colors
