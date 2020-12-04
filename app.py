@@ -70,7 +70,7 @@ def index_post():
 
 		fig.write_image('static/images/map' + str + '.png')
 		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
-	else: # else if 'SkipRequest' in request.form:
+	elif 'SkipRequest' in request.form:
 		result = 'You skipped :( The correct state was ' + current_state + '. This state will now be highlighted.'
 		update_colors(colors+[0])
 		update_trivia_parameters()
@@ -81,6 +81,34 @@ def index_post():
 
 		fig.write_image('static/images/map' + str + '.png')
 		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
+	elif 'RestartGame' in request.form:
+		reset_game()
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
+
+def reset_game():
+		global now
+		now = datetime.now()
+		global str
+		str = now.strftime("%Y%m%d%H%M%s")
+		states_used = ['stateIncorrect', 'stateCorrect']
+		colors = [0,1]
+		color_scale = [(0,"red"), (1,"green")]
+		left_to_guess = deepcopy(states)
+
+		current_state = states[random.choice(list(left_to_guess.keys()))]
+		is_current_state = trivia['State']==current_state
+		trivia_current_state = trivia[is_current_state].index[0]
+		question_choices = trivia.iloc[trivia_current_state]
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
+		cols = ['Flower-Bird','Funfact1','Funfact2']
+		question_type = random.choice(cols)
+        
+		fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
+
+		current_question = 'State Flower: ' + question_choices['Flower'] +', State Bird: ' + question_choices['Bird'] if question_type == 'Flower-Bird' else question_choices[question_type]
+
+		now = datetime.now()
+		str = now.strftime("%Y%m%d%H%M%s")
 
 def update_map_path():
 	global now
