@@ -87,7 +87,7 @@ def index_post():
 		return result
 	elif 'TakeSurvey' in request.form:
 		webbrowser.open('https://www.surveymonkey.com/r/8GPRNPL')
-		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = result)
+		return render_template('index.html', map_image = '../static/images/map' + str + '.png', trivia_question = current_question, feedback_message = "Thanks for taking our survey")
 
 def reset_game():
 		update_states_used(['stateIncorrect', 'stateCorrect'])
