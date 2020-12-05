@@ -1,7 +1,6 @@
 #header h1{
 	background-image: url(../images/bg.jpg);
 	background-size: auto;
-	/* background-position: 50%; */
 	background-attachment: fixed;
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -18,4 +17,7 @@
 }
 .container img{
 	margin-right: 20px;
+}
+.container h2{
+	color: #ECB913;
 }

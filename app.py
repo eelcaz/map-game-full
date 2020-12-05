@@ -127,8 +127,8 @@ def handle_reset():
 
 def get_score():
 	if len(states_used) == 2:
-		return 'No score yet'
-	return str(current_score) + '/ ' + str(len(states_used)-2) + ' = ' + str(round(current_score/(len(states_used)-2)*100, 2)) + '%'
+		return 'NA'
+	return str(current_score) + '/ ' + str(len(states_used)-2) # + ' = ' + str(round(current_score/(len(states_used)-2)*100, 2)) + '%'
 
 def update_score(new_score):
 	global current_score

@@ -14,7 +14,9 @@
 				<img src="../static/images/GitHub-Mark.png" alt="" width="50px" height="50px">
 			</a>
 			<h1>Hey! Can you guess which state it is?</h1>
-			<img src="../static/images/us-flag-icon.png" alt="" width="50px" height="30px">
+			<a href="https://goo.gl/maps/hHtf7W3L8BqWgovd8" target="_blank">
+				<img src="../static/images/us-flag-icon.png" alt="" width="50px" height="30px">
+			</a>
 	</div>
 	<div class="container-flex">
 		<div class="row justify-content-center">
@@ -22,6 +24,7 @@
 				<img src="{{ map_image }}" alt="Map Image">
 				<br>
 				<div class="container row justify-content-around">
+					<h2>Score: {{curr_score}}</h2>
 					<form method="POST" name="myform3">
 						<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart quiz</button>
 					</form>
