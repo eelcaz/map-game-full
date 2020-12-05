@@ -7,6 +7,7 @@ from states import STATES
 import pandas as pd
 from copy import deepcopy
 import webbrowser
+from playsound import playsound
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
@@ -25,6 +26,8 @@ colors = [0,1]
 color_scale = [(0,"red"), (0.75, 'green'), (1,"lightgreen")]
 left_to_guess = deepcopy(states)
 
+table = [['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA'],['HI', 'ID', 'IL', 'IN','IA','KS','KY','LA','ME','MD'],['MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ'],['NM','NY','NC','ND','OH','OK','OR','PA','RI','SC'],['SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']]
+
 current_state = states[random.choice(list(left_to_guess.keys()))]
 is_current_state = trivia['State']==current_state
 trivia_current_state = trivia[is_current_state].index[0]
@@ -42,7 +45,7 @@ current_score = 0
 @app.route('/')
 def index():
 	update_map()
-	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, curr_score = get_score())
+	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, curr_score = get_score(), tbl = table)
 
 @app.route('/', methods=['POST'])
 def index_post():
@@ -54,43 +57,52 @@ def index_post():
 		return handle_reset()
 	elif 'TakeSurvey' in request.form:
 		webbrowser.open('https://www.surveymonkey.com/r/8GPRNPL')
-		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = "Thanks for taking our survey", curr_score = current_score)
+		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = "Thanks for taking our survey!", curr_score = current_score, tbl = table)
 
 def handle_guess(request):
+	if len(left_to_guess) == 0:
+		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = "Click restart to play again!", curr_score = get_score(), tbl = table)
+
 	text = request.form['text']
 	processed_text = text.upper()
 	if processed_text not in states:
-		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!', curr_score = get_score())
+		playsound('sounds/error.wav')
+		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!', curr_score = get_score(), tbl = table)
 	if processed_text not in left_to_guess:
-		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'State already used!', curr_score = get_score())
+		playsound('sounds/error.wav')
+		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'State already used!', curr_score = get_score(), tbl = table)
 	
 	processed_text = states[processed_text]
 	result = ''
 	if processed_text == current_state:
 		update_colors(colors+[1])
 		update_score(current_score+1)
+		playsound('sounds/correct.wav')
 		result = 'Correct! This state will now be highlighted'
 	else:
 		update_colors(colors+[0])
 		update_score(current_score)
+		playsound('sounds/incorrect.wav')
 		result = 'Incorrect :( The correct state is ' + get_state_name() + '. This state will now be highlighted.'
-
 	update_trivia_parameters()
 	update_map()
 
-	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = result, curr_score = get_score())
+	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = result, curr_score = get_score(), tbl = table)
 
 def get_state_name():
 	return state_names[current_state].capitalize()
 
 def handle_skip():
+	if len(left_to_guess) == 0:
+		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = "Click restart to play again!", curr_score = get_score(), tbl = table)
+	playsound('sounds/skip.wav')
 	result = 'You skipped :( The correct state was ' + get_state_name() + '. This state will now be highlighted.'
 	update_colors(colors+[0])
 	update_trivia_parameters()
 	update_map()
 	update_score(current_score)
 	
-	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = result, curr_score = get_score())
+	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = result, curr_score = get_score(), tbl = table)
 
 def update_map():
 	fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
@@ -104,12 +116,14 @@ def handle_reset():
 	update_score(0)
 	global left_to_guess
 	left_to_guess = deepcopy(states)
+	global table
+	table = [['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA'],['HI', 		'ID', 'IL', 'IN','IA','KS','KY','LA','ME','MD'],		['MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ'],		['NM','NY','NC','ND','OH','OK','OR','PA','RI','SC'],									['SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']]
 
 	update_current_state(states[random.choice(list(left_to_guess.keys()))])    
 	update_current_question(generateNewQuestion())
 
 	update_map()
-	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message='Restarted!', curr_score = get_score())
+	return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message='Restarted!', curr_score = get_score(), tbl = table)
 
 def get_score():
 	if len(states_used) == 2:
@@ -171,5 +185,13 @@ def update_trivia_parameters():
 				keys_to_remove += [q]
 	for k in keys_to_remove:
 		left_to_guess.pop(k)
-	update_current_state(states[random.choice(list(left_to_guess.keys()))])
-	update_current_question(generateNewQuestion())
+		for x in range(len(table)):
+			for y in range(len(table[x])):
+				if table[x][y]==k:
+					table[x][y] = "  "
+
+	if len(left_to_guess) > 0:
+		update_current_state(states[random.choice(list(left_to_guess.keys()))])
+		update_current_question(generateNewQuestion())  
+	else:
+		update_current_question("You've completed the game!")  
