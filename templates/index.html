@@ -20,6 +20,15 @@
 		<div class="row justify-content-center">
 			<div class="col ">
 				<img src="{{ map_image }}" alt="Map Image">
+				<br>
+				<div class="container row justify-content-around">
+					<form method="POST" name="myform3">
+						<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart quiz</button>
+					</form>
+					<form method="POST" name="myform3">
+						<button type="submit" name="TakeSurvey" class="btn btn-light d-flex ">Take our survey!</button>
+					</form>
+				</div>
 			</div>
 			<div class="col" id="trivia">
 				<div class="container">
@@ -42,16 +51,7 @@
 						<p>{{feedback_message}}</p>
 					</div>
 					<br>
-					<div class="container row justify-content-between">
-						<form method="POST" name="myform3">
-							<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart</button>
-						</form>
-						<form method="POST" name="myform3">
-							<button type="submit" name="TakeSurvey" class="btn btn-light d-flex ">Take our survey!</button>
-						</form>
-					</div>
-					<br>
-					<table>
+					<table class="table table-bordered">
  					 {%for row in tbl%}
      					<tr>
         				{%for col in row%}
