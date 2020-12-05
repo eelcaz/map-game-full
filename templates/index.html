@@ -25,14 +25,17 @@
 				<div class="container">
 					<form method="POST" name="myform">
 						<div class="form-group">
-						<label><h5>{{ trivia_question }}</h5></label>
-						<input name="text" class="form-control col-md-6" placeholder='Enter the state name here'>
+							<label><h5>{{ trivia_question }}</h5></label>
+							<input name="text" class="form-control col-md-6" placeholder='Enter the state name here'>
 						</div>
-						<button type="submit" name="AnswerRequest" class="btn btn-primary d-flex ">Submit answer</button><br>
+						<div class="container row justify-content-between">
+							<button type="submit" name="AnswerRequest" class="btn btn-primary d-flex ">Submit answer</button><br>
+							<form method="POST" name="myform2">
+								<button type="submit" name="SkipRequest" class="btn btn-light d-flex ">Skip this question</button>
+							</form>
+						</div>
 					</form>
-					<form method="POST" name="myform2">
-						<button type="submit" name="SkipRequest" class="btn btn-light d-flex ">Skip this question</button>
-					</form>
+					
 					<br>
 					<div class="container row">
 						<img width="30px" src="../static/images/bell.png"/><br>
