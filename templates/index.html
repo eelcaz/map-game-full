@@ -9,13 +9,17 @@
 	<title>Map Game!</title>
 </head>
 <body onload="document.myform.text.focus();">
-	<div class="row justify-content-center" id="header">
-		<h1>Hey! Can you guess which state it is?</h1>
+	<div class="container-flex row justify-content-between" id="header">
+			<a href="https://github.com/eelcaz/map-game-full" target="_blank">
+				<img src="../static/images/GitHub-Mark.png" alt="" width="50px" height="50px">
+			</a>
+			<h1>Hey! Can you guess which state it is?</h1>
+			<img src="../static/images/us-flag-icon.png" alt="" width="50px" height="30px">
 	</div>
 	<div class="container-flex">
 		<div class="row justify-content-center">
 			<div class="col ">
-				<img src="{{ map_image }}" alt="Map Image" width="800px">
+				<img src="{{ map_image }}" alt="Map Image">
 			</div>
 			<div class="col" id="trivia">
 				<div class="container">
@@ -30,14 +34,20 @@
 						<button type="submit" name="SkipRequest" class="btn btn-light d-flex ">Skip this question</button>
 					</form>
 					<br>
-					<img style='display:block; width:40px;height:40px;' id='base64image' src="../static/images/bell.png"/>
-					<p>{{feedback_message}}</p>
-					<form method="POST" name="myform3">
-						<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart</button>
-					</form>
-					<form method="POST" name="myform3">
-						<button type="submit" name="TakeSurvey" class="btn btn-light d-flex ">Take our survey!</button>
-					</form>
+					<div class="container row">
+						<img width="30px" src="../static/images/bell.png"/><br>
+						<p>{{feedback_message}}</p>
+					</div>
+					<br>
+					<div class="container row justify-content-between">
+						<form method="POST" name="myform3">
+							<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart</button>
+						</form>
+						<form method="POST" name="myform3">
+							<button type="submit" name="TakeSurvey" class="btn btn-light d-flex ">Take our survey!</button>
+						</form>
+					</div>
+					<br>
 					<table>
  					 {%for row in tbl%}
      					<tr>

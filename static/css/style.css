@@ -1,12 +1,21 @@
+#header h1{
+	background-image: url(../images/bg.jpg);
+	background-size: auto;
+	/* background-position: 50%; */
+	background-attachment: fixed;
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+}
+#header img{
+	margin-right: 10px;
+}
 #header{
-	border-bottom: rgb(245, 245, 245);
-	color: navy;
 	padding: 20px;
 }
 #trivia.col{
 	margin-top: 80px;
 }
-img{
-	width: 800px;
+.container img{
+	margin-right: 20px;
 }
-
