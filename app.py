@@ -108,7 +108,7 @@ def update_map():
 	fig = px.choropleth(locations=states_used, locationmode="USA-states", scope="usa", color=colors, color_continuous_scale=color_scale)
 	fig.update_layout(coloraxis_showscale=False)
 	update_map_path()
-	fig.write_image('static/images/map' + date_string + '.png')
+	fig.write_image('static/images/map' + date_string + '.png', engine='kaleido')
 
 def handle_reset():
 	update_states_used(['stateIncorrect', 'stateCorrect'])
