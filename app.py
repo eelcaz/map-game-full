@@ -195,7 +195,7 @@ def update_trivia_parameters():
 		update_current_state(states[random.choice(list(left_to_guess.keys()))])
 		update_current_question(generateNewQuestion())  
 	else:
-		update_current_question("You've completed the game!")  
+		update_current_question("Congratulations, you've completed the game!")  
 
 def sound(path):
 	if platform.system() == 'Linux':
