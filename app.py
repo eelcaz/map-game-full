@@ -7,6 +7,7 @@ from states import STATES
 import pandas as pd
 from copy import deepcopy
 import webbrowser
+import platform
 from playsound import playsound
 
 app = Flask(__name__)
@@ -66,10 +67,10 @@ def handle_guess(request):
 	text = request.form['text']
 	processed_text = text.upper()
 	if processed_text not in states:
-		playsound('sounds/error.wav')
+		sound('sounds/error.wav')
 		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'Not a valid state!', curr_score = get_score(), tbl = table)
 	if processed_text not in left_to_guess:
-		playsound('sounds/error.wav')
+		sound('sounds/error.wav')
 		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = 'State already used!', curr_score = get_score(), tbl = table)
 	
 	processed_text = states[processed_text]
@@ -77,12 +78,12 @@ def handle_guess(request):
 	if processed_text == current_state:
 		update_colors(colors+[1])
 		update_score(current_score+1)
-		playsound('sounds/correct.wav')
+		sound('sounds/correct.wav')
 		result = 'Correct! This state will now be highlighted'
 	else:
 		update_colors(colors+[0])
 		update_score(current_score)
-		playsound('sounds/incorrect.wav')
+		sound('sounds/incorrect.wav')
 		result = 'Incorrect :( The correct state is ' + get_state_name() + '. This state will now be highlighted.'
 	update_trivia_parameters()
 	update_map()
@@ -95,7 +96,7 @@ def get_state_name():
 def handle_skip():
 	if len(left_to_guess) == 0:
 		return render_template('index.html', map_image = '../static/images/map' + date_string + '.png', trivia_question = current_question, feedback_message = "Click restart to play again!", curr_score = get_score(), tbl = table)
-	playsound('sounds/skip.wav')
+	sound('sounds/skip.wav')
 	result = 'You skipped :( The correct state was ' + get_state_name() + '. This state will now be highlighted.'
 	update_colors(colors+[0])
 	update_trivia_parameters()
@@ -195,3 +196,9 @@ def update_trivia_parameters():
 		update_current_question(generateNewQuestion())  
 	else:
 		update_current_question("You've completed the game!")  
+
+def sound(path):
+	if platform.system() == 'Linux':
+		os.system('aplay ' + path + '&')
+	elif platform.system() == 'Mac':
+		os.system('afplay ' + path + '&')
