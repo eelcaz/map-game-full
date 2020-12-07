@@ -200,5 +200,5 @@ def update_trivia_parameters():
 def sound(path):
 	if platform.system() == 'Linux':
 		os.system('aplay ' + path + '&')
-	elif platform.system() == 'Mac':
+	elif platform.system() == 'Darwin':
 		playsound(path)
