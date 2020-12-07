@@ -1,5 +1,7 @@
 # map-game-full
 
+For best results, you should run this from a Linux-based OS (VirtualBox VMs work fine) or on Mac. As of now, sound does not work when running on Windows. If you wish to run on Windows, use WSL for the installation process.
+
 After cloning this repository, run the following lines to start the development server:
 
 source map-game-full/bin/activate
