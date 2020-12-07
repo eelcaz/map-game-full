@@ -201,4 +201,4 @@ def sound(path):
 	if platform.system() == 'Linux':
 		os.system('aplay ' + path + '&')
 	elif platform.system() == 'Mac':
-		os.system('afplay ' + path + '&')
+		playsound(path)
