@@ -28,7 +28,7 @@
 					<form method="POST" name="myform3">
 						<button type="submit" name="RestartGame" class="btn btn-light d-flex ">Restart quiz</button>
 					</form>
-					<form method="POST" name="myform2">
+					<form method="POST" name="myform3">
 						<button type="submit" name="TakeSurvey" class="btn btn-light d-flex ">Take our survey!</button>
 					</form>
 				</div>
@@ -41,8 +41,10 @@
 							<input name="text" class="form-control col-md-6" placeholder='Enter the state name here'>
 						</div>
 						<div class="container row">
-							<button type="submit" name="AnswerRequest" class="btn btn-primary d-flex ">Submit answer</button><br>
-							<button type="submit" name="SkipRequest" class="btn btn-light d-flex ">Skip this question</button>
+							<button type="submit" name="AnswerRequest" class="btn btn-primary d-flex mr-5">Submit answer</button><br>
+							<form method="POST" name="myform2">
+								<button type="submit" name="SkipRequest" class="btn btn-light d-flex ">Skip this question</button>
+							</form>
 						</div>
 					</form>
 					
